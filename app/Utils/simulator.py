@@ -16,6 +16,150 @@ DISPLAY_NAMES = {
         "Tutoring Sessions"
 }
 
+FEATURE_CAPS = {
+    "Hours_Studied": 6,
+    "Sleep_Hours": 8,
+    "Stress_Level": 3,
+    "Attendance": 95,
+    "Tutoring_Sessions_Per_Week": 2
+}
+
+def needs_improvement(student, feature):
+    cap = FEATURE_CAPS[feature]
+
+    value = student[feature]
+
+    if feature == "Stress_Level":
+        return value > cap
+    
+    return value < cap
+
+def clamp(value, minimum, maximum):
+    return max(minimum, min(value, maximum))
+
+def build_conservative_plan(student):
+
+    plan = {}
+
+    if needs_improvement(student, "Hours_Studied"):
+        plan["Hours_Studied"] = clamp(
+            student["Hours_Studied"] + 1,
+            0,
+            FEATURE_CAPS["Hours_Studied"]
+        )
+
+    if needs_improvement(student, "Sleep_Hours"):
+        plan["Sleep_Hours"] = clamp(
+            student["Sleep_Hours"] + 1,
+            0,
+            FEATURE_CAPS["Sleep_Hours"]
+        )
+
+    if needs_improvement(student, "Stress_Level"):
+        plan["Stress_Level"] = clamp(
+            student["Stress_Level"] - 1,
+            FEATURE_CAPS["Stress_Level"],
+            10
+        )
+
+    if needs_improvement(student, "Attendance"):
+        plan["Attendance"] = clamp(
+            student["Attendance"] + 2,
+            0,
+            FEATURE_CAPS["Attendance"]
+        )
+
+    if needs_improvement(student, "Tutoring_Sessions_Per_Week"):
+        plan["Tutoring_Sessions_Per_Week"] = clamp(
+            student["Tutoring_Sessions_Per_Week"] + 1,
+            0,
+            FEATURE_CAPS["Tutoring_Sessions_Per_Week"]
+        )
+
+    return plan
+
+def build_moderate_plan(student):
+
+    plan = {}
+
+    if needs_improvement(student, "Hours_Studied"):
+        plan["Hours_Studied"] = clamp(
+            student["Hours_Studied"] + 2,
+            0,
+            FEATURE_CAPS["Hours_Studied"]
+        )
+
+    if needs_improvement(student, "Sleep_Hours"):
+        plan["Sleep_Hours"] = clamp(
+            student["Sleep_Hours"] + 2,
+            0,
+            FEATURE_CAPS["Sleep_Hours"]
+        )
+
+    if needs_improvement(student, "Stress_Level"):
+        plan["Stress_Level"] = clamp(
+            student["Stress_Level"] - 2,
+            FEATURE_CAPS["Stress_Level"],
+            10
+        )
+
+    if needs_improvement(student, "Attendance"):
+        plan["Attendance"] = clamp(
+            student["Attendance"] + 5,
+            0,
+            FEATURE_CAPS["Attendance"]
+        )
+
+    if needs_improvement(student, "Tutoring_Sessions_Per_Week"):
+        plan["Tutoring_Sessions_Per_Week"] = clamp(
+            student["Tutoring_Sessions_Per_Week"] + 1,
+            0,
+            FEATURE_CAPS["Tutoring_Sessions_Per_Week"]
+        )
+
+    return plan
+
+def build_ambitious_plan(student):
+
+    plan = {}
+
+    if needs_improvement(student, "Hours_Studied"):
+        plan["Hours_Studied"] = clamp(
+            student["Hours_Studied"] + 3,
+            0,
+            FEATURE_CAPS["Hours_Studied"]
+        )
+
+    if needs_improvement(student, "Sleep_Hours"):
+        plan["Sleep_Hours"] = clamp(
+            student["Sleep_Hours"] + 3,
+            0,
+            FEATURE_CAPS["Sleep_Hours"]
+        )
+
+    if needs_improvement(student, "Stress_Level"):
+        plan["Stress_Level"] = clamp(
+            student["Stress_Level"] - 3,
+            FEATURE_CAPS["Stress_Level"],
+            10
+        )
+
+    if needs_improvement(student, "Attendance"):
+        plan["Attendance"] = clamp(
+            student["Attendance"] + 10,
+            0,
+            FEATURE_CAPS["Attendance"]
+        )
+
+    if needs_improvement(student, "Tutoring_Sessions_Per_Week"):
+        plan["Tutoring_Sessions_Per_Week"] = clamp(
+            student["Tutoring_Sessions_Per_Week"] + 2,
+            0,
+            FEATURE_CAPS["Tutoring_Sessions_Per_Week"]
+        )
+
+    return plan
+
 
 
 def simulate_change(student, feature, newValue, predictor):
@@ -168,6 +312,10 @@ AMBITIOUS_PLAN = {
 }
 
 def generate_improvement_plans(student, predictor):
+    conservative = build_conservative_plan(student)
+    moderate = build_moderate_plan(student)
+    ambitious = build_ambitious_plan(student)
+
 
     plans = []
 
@@ -175,7 +323,7 @@ def generate_improvement_plans(student, predictor):
         student,
         predictor,
         "Conservative",
-        CONSERVATIVE_PLAN
+        conservative
         )
     )
 
@@ -183,7 +331,7 @@ def generate_improvement_plans(student, predictor):
         student,
         predictor,
         "Moderate",
-        MODERATE_PLAN
+        moderate
         )
     )
 
@@ -191,9 +339,15 @@ def generate_improvement_plans(student, predictor):
         student,
         predictor,
         "Ambitious",
-        AMBITIOUS_PLAN
+        ambitious
         )
     )
+
+    for plan in plans:
+        print(plan['plan'])
+        print(plan['changes'])
+        print(plan['gain'])
+        print()
 
     return plans
 

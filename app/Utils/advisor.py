@@ -1,3 +1,4 @@
+
 def getPerformanceCategory(score):
 
     if score >= 90:
@@ -95,6 +96,7 @@ def getRecommendations(student):
     return recommendations
 
 def analyze_student(student, pred_score):
+
 
     return {
         "score": pred_score,
